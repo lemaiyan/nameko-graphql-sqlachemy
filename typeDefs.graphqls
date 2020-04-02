@@ -1,0 +1,67 @@
+scalar DateTime
+type Rank {
+    id: ID!
+    name: String!
+    inRank: [Crew!]!
+    dateAdded: DateTime
+}
+
+type Race {
+    id: ID!
+    name: String!
+    inRace: [crew!]!
+    dateAdded: DateTime
+}
+
+type Ship {
+    id: ID!
+    name: String!
+    shipCrew: [Crew!]!
+    dateAdded: DateTime
+}
+
+type Crew {
+    id: ID!
+    name: String!
+    rank: Rank!
+    race: Race!
+    ship: Ship!
+    dateAdded: DateTime!
+}
+
+input addShipInput {
+    name: String
+}
+
+input addRaceInput {
+    name: String
+}
+
+input addRankInput {
+    name: String
+}
+
+input addCrewInput {
+    name: String!
+    rank: Rank!
+    race: Race!
+    ship: Ship!
+}
+
+type Query {
+    totalShips: Int!
+    allShips: [Ship!]!
+    totalCrew: Int!
+    allCrew:[Crew!]!
+    totalRace: Int!
+    allRace: [Race!]!
+    totalRank: Int!
+    allRank: [Rank!]!
+}
+
+type Mutation {
+    addShip(input: addShipInput!): Ship!
+    addCrew(input: addCrewInput!): Crew!
+    addRace(input: addRaceInput!): Race!
+    addRace(input: addRankInput!): Rank!
+}

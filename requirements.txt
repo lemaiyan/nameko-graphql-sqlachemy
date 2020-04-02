@@ -1,0 +1,7 @@
+graphql-server-core
+graphene
+nameko
+sqlalchemy
+nameko-extras
+graphene_sqlalchemy
+pytest

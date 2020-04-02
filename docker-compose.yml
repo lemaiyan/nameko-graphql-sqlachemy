@@ -1,0 +1,9 @@
+version: "3.7"
+services:
+  graphql_service:
+    container_name: graphql-service
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/var/app
