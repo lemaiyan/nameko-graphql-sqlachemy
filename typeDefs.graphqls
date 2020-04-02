@@ -9,7 +9,7 @@ type Rank {
 type Race {
     id: ID!
     name: String!
-    inRace: [crew!]!
+    inRace: [Crew!]!
     dateAdded: DateTime
 }
 
@@ -49,13 +49,9 @@ input addCrewInput {
 }
 
 type Query {
-    totalShips: Int!
-    allShips: [Ship!]!
-    totalCrew: Int!
+    allShip: [Ship!]!
     allCrew:[Crew!]!
-    totalRace: Int!
-    allRace: [Race!]!
-    totalRank: Int!
+    allRaces: [Race!]!
     allRank: [Rank!]!
 }
 
