@@ -1,2 +1,10 @@
 WEB_SERVER_ADDRESS: '0.0.0.0:5000'
 AUTORELOAD: true
+LOGGING:
+  version: 1
+  handlers:
+    console:
+      class: logging.StreamHandler
+  root:
+    level: INFO
+    handlers: [console]

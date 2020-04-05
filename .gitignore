@@ -131,3 +131,4 @@ dmypy.json
 .pyre/
 .idea/
 ./.pytest_cache
+database.sqlite3

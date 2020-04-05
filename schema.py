@@ -4,9 +4,11 @@ from models import Race as RaceModel
 from models import Crew as CrewModel
 
 import graphene
+import logging
 from graphene import relay
 from sqlalchemy import func
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
+from database import db_session
 
 
 class Crew(SQLAlchemyObjectType):
@@ -102,4 +104,116 @@ class Query(graphene.ObjectType):
         return rank + race + ship + crew
 
 
-schema = graphene.Schema(query=Query)
+class ShipInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+
+
+class RaceInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+
+
+class RankInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+
+
+class CrewInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    rank = graphene.String(required=True)
+    race = graphene.String(required=True)
+    ship = graphene.String(required=True)
+
+
+class AddShipMutation(graphene.Mutation):
+    class Arguments:
+        ship_data = ShipInput(required=True)
+
+    ship = graphene.Field(Ship)
+
+    @staticmethod
+    def mutate(root, info, ship_data=None):
+        ship = ShipModel(name=ship_data.name)
+        db_session.add(ship)
+        db_session.commit()
+
+        return AddShipMutation(ship=ship)
+
+
+class AddRankMutation(graphene.Mutation):
+    class Arguments:
+        rank_data = RankInput(required=True)
+
+    rank = graphene.Field(Rank)
+
+    @staticmethod
+    def mutate(root, info, rank_data=None):
+        rank = RankModel(name=rank_data.name)
+        db_session.add(rank)
+        db_session.commit()
+
+        return AddRankMutation(rank=rank)
+
+
+class AddRaceMutation(graphene.Mutation):
+    class Arguments:
+        race_data = RaceInput(required=True)
+
+    race = graphene.Field(Race)
+
+    @staticmethod
+    def mutate(root, info, race_data=None):
+        race = RaceModel(name=race_data.name)
+        db_session.add(race)
+        db_session.commit()
+
+        return AddRaceMutation(race=race)
+
+
+class CrewOutput(graphene.ObjectType):
+    name = graphene.String()
+    rank = graphene.String()
+    race = graphene.String()
+    ship = graphene.String()
+
+
+class AddCrewMutation(graphene.Mutation):
+    class Arguments:
+        crew_data = CrewInput(required=True)
+
+    Output = CrewOutput
+
+    @staticmethod
+    def mutate(root, info, crew_data=None):
+        logging.info(f'add-crew-mutation {crew_data}')
+        rank = Rank.get_query(info).filter(func.lower(RankModel.name) == func.lower(crew_data.rank)).first()
+        logging.info(f'rank {rank.name}')
+        race = Race.get_query(info).filter(func.lower(RaceModel.name) == func.lower(crew_data.race)).first()
+        logging.info(f'race {race.name}')
+        ship = Ship.get_query(info).filter(ShipModel.name.ilike(f'%{crew_data.ship}%')).first()
+        logging.info(f'ship {ship}')
+        crew = CrewModel(name=crew_data.ship)
+        logging.info(f'crew {crew.name}')
+        output = CrewOutput()
+        output.name = crew.name
+        if rank:
+            crew.rank = rank
+            output.rank = rank.name
+        if race:
+            crew.race = race
+            output.race = race.name
+        if ship:
+            crew.ship = ship
+            output.ship = ship.name
+        db_session.add(crew)
+        db_session.commit()
+
+        return output
+
+
+class Mutations(graphene.ObjectType):
+    add_ship = AddShipMutation.Field()
+    add_rank = AddRankMutation.Field()
+    add_race = AddRaceMutation.Field()
+    add_crew = AddCrewMutation.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutations)
