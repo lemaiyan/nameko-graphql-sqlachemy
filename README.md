@@ -9,3 +9,34 @@ the steps below
 
 * Run `docker-compose up` to start the service and wait for the app to start
 * Go to your favorite GraphQL client and connect to http://localhost:5000/graphql and start writing queries
+
+
+## Queries
+```graphql
+query crewDetails {
+  allCrew(first: 10) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      endCursor
+      startCursor
+    }
+    edges {
+      node {
+        name
+        ship {
+          name
+        }
+        race {
+          name
+        }
+        rank {
+          name
+        }
+      }
+      cursor
+    }
+  }
+}
+
+```
