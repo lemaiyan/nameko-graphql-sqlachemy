@@ -5,3 +5,4 @@ sqlalchemy
 nameko-extras
 graphene_sqlalchemy
 pytest
+structlog
